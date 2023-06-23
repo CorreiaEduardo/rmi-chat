@@ -1,21 +1,22 @@
 package br.uneb.sis035.rmichat.server;
 
 import br.uneb.sis035.rmichat.Message;
-import br.uneb.sis035.rmichat.ChatClient;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class MessageImpl implements Message {
-    private final ChatClient sender;
-    private final String channel;
-    private final String message;
+    private String sender;
+    private String channel;
+    private String message;
     private LocalDateTime timestamp;
 
-    public MessageImpl(ChatClient sender, String channel, String message) {
+    public MessageImpl(String sender, String channel, String message) {
         this.sender = sender;
         this.channel = channel;
         this.message = message;

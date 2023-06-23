@@ -11,19 +11,25 @@ import redis.clients.jedis.JedisPool;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
     private final Map<String, List<ChatClient>> channels;
     private final JedisPool jedisPool;
+    private final Gson gson;
 
     public ChatServerImpl(JedisPool pool) throws RemoteException {
-        this.channels = new HashMap<>();
         this.jedisPool = pool;
+        this.channels = new HashMap<>();
+        this.gson = new Gson();
+
+        try (Jedis jedis = jedisPool.getResource()) {
+            final Set<String> keys = jedis.keys("*");
+            for (String key : keys) {
+                channels.put(key, new ArrayList<>());
+            }
+        }
     }
 
     @Override
@@ -46,19 +52,25 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         storeMessage(message);
     }
 
+    @Override
     public List<Message> getChatHistory(String channel) throws RemoteException {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis
                     .lrange(channel, 0, -1)
                     .stream()
-                    .map(it -> new Gson().fromJson(it, Message.class))
+                    .map(it -> gson.fromJson(it, MessageImpl.class))
                     .collect(Collectors.toList());
         }
     }
 
+    @Override
+    public List<String> getAvailableChannels() throws RemoteException {
+        return new ArrayList<>(channels.keySet());
+    }
+
     private void storeMessage(Message message) throws RemoteException {
         try (Jedis jedis = jedisPool.getResource()) {
-            jedis.rpush(message.getChannel(), new Gson().toJson(message));
+            jedis.rpush(message.getChannel(), gson.toJson(message));
         }
     }
 }

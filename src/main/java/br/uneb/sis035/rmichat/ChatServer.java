@@ -2,6 +2,7 @@ package br.uneb.sis035.rmichat;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface ChatServer extends Remote {
 
@@ -15,4 +16,8 @@ public interface ChatServer extends Remote {
     void registerClient(String channel, ChatClient client) throws RemoteException;
 
     void broadcastMessage(Message message) throws RemoteException;
+
+    List<Message> getChatHistory(String channel) throws RemoteException;
+
+    List<String> getAvailableChannels() throws RemoteException;
 }

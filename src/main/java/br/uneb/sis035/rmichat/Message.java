@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public interface Message extends Serializable {
-    ChatClient getSender();
+    String getSender();
 
     String getChannel();
 

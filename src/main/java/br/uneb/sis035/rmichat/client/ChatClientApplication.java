@@ -8,7 +8,7 @@ public class ChatClientApplication {
         try {
             // Create and connect a chat client
             ChatClientImpl client1 = new ChatClientImpl("Client4");
-            client1.connectToServer("rmi://localhost:2099/ChatServer");
+            client1.connectToServer("rmi://localhost:1099/ChatServer");
 
             // Start the chat session
             client1.startChatting();

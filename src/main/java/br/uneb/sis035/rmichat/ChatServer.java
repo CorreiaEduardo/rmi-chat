@@ -20,4 +20,6 @@ public interface ChatServer extends Remote {
     List<Message> getChatHistory(String channel) throws RemoteException;
 
     List<String> getAvailableChannels() throws RemoteException;
+
+    void synchronizeMessage(Message message) throws RemoteException;
 }

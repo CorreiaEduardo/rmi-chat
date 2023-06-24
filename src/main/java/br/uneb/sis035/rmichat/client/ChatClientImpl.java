@@ -62,6 +62,7 @@ public class ChatClientImpl extends UnicastRemoteObject implements ChatClient {
         }
 
         System.out.println("Chat session ended.");
+        System.exit(0);
     }
 
     private void logChannelHistory() throws RemoteException {

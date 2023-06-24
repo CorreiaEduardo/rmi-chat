@@ -1,7 +1,7 @@
 package br.uneb.sis035.rmichat.server;
 
 import br.uneb.sis035.rmichat.ChatClient;
-import br.uneb.sis035.rmichat.ChatServer;
+import br.uneb.sis035.rmichat.DiscoverableChatServer;
 import br.uneb.sis035.rmichat.DiscoveryServer;
 import br.uneb.sis035.rmichat.Message;
 
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
+public class ChatServerImpl extends UnicastRemoteObject implements DiscoverableChatServer {
     private final JedisPool jedisPool;
     private final DiscoveryServer discoveryServer;
     private final Map<String, List<ChatClient>> channels;
@@ -48,7 +48,7 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         final List<ChatClient> channelClients = channels.getOrDefault(message.getChannel(), new ArrayList<>());
         message.setTimestamp(LocalDateTime.now());
 
-        for (ChatServer sibling : discoveryServer.findSiblings(this)) {
+        for (DiscoverableChatServer sibling : discoveryServer.findSiblings(this)) {
             new Thread(() -> {
                 try {
                     sibling.synchronizeMessage(message);
@@ -88,7 +88,6 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         return new ArrayList<>(channels.keySet());
     }
 
-    @Override
     public void synchronizeMessage(Message message) throws RemoteException {
         final List<ChatClient> channelClients = channels.getOrDefault(message.getChannel(), new ArrayList<>());
 
